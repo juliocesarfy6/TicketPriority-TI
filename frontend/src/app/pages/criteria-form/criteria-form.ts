@@ -1,11 +1,22 @@
 import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-criteria-form',
-  imports: [],
-  templateUrl: './criteria-form.html',
-  styleUrl: './criteria-form.css',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  templateUrl: './criteria-form.html'
 })
-export class CriteriaForm {
+export class CriteriaFormComponent {
+
+  criterio = {
+    nombre: '',
+    peso: 0
+  };
+
+  save() {
+    console.log('Criterio guardado:', this.criterio);
+  }
 
 }

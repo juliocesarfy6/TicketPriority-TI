@@ -1,1 +1,16 @@
-<p>ticket-form works!</p>
+<h2>Registrar Ticket</h2>
+
+<form (ngSubmit)="save()">
+  <input type="text" placeholder="Descripción" [(ngModel)]="ticket.descripcion" name="descripcion" class="form-control">
+
+  <label>Severidad</label>
+  <input type="number" [(ngModel)]="ticket.severidad" name="severidad" class="form-control">
+
+  <label>Impacto</label>
+  <input type="number" [(ngModel)]="ticket.impacto" name="impacto" class="form-control">
+
+  <label>Usuarios afectados</label>
+  <input type="number" [(ngModel)]="ticket.usuarios" name="usuarios" class="form-control">
+
+  <button class="btn btn-primary mt-3">Guardar</button>
+</form>

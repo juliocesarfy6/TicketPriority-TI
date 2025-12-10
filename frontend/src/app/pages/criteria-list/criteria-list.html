@@ -1,1 +1,19 @@
-<p>criteria-list works!</p>
+<h2>Lista de Criterios SAW</h2>
+
+<a routerLink="/criteria/new" class="btn btn-primary mb-3">Nuevo Criterio</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Criterio</th>
+      <th>Peso</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr *ngFor="let c of criterios">
+      <td>{{ c.nombre }}</td>
+      <td>{{ c.peso }}</td>
+    </tr>
+  </tbody>
+</table>
