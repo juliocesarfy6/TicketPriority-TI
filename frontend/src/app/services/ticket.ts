@@ -16,4 +16,12 @@ export class TicketService {
   createTicket(data: any) {
     return this.http.post(this.url, data);
   }
+
+  updateTicket(data: any) {
+    return this.http.put(`${this.url}/${data.id}`, data);
+  }
+
+  deleteTicket(id: number) {
+    return this.http.delete(`${this.url}/${id}`);
+  }
 }
