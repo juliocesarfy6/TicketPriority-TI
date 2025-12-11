@@ -5,3 +5,54 @@ npm init -y
 npm install express cors dotenv mysql2 sequelize
 npm install -D nodemon
 npm install dotenv
+
+
+
+/////////////////////////BASE DE DATOS/////////////////////////////////
+CREATE DATABASE ticket_saw;
+USE ticket_saw;
+
+CREATE TABLE tickets (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    descripcion VARCHAR(255) NOT NULL,
+    severidad INT NOT NULL,     -- 1 a 5
+    impacto INT NOT NULL,       -- 1 a 5
+    usuarios INT NOT NULL,      -- número de usuarios afectados
+    prioridad_saw DECIMAL(10,4) DEFAULT NULL
+);
+
+CREATE TABLE criterios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL,
+    peso DECIMAL(10,4) NOT NULL   -- peso normalizado o bruto
+);
+
+CREATE TABLE evaluaciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id INT NOT NULL,
+    criterio_id INT NOT NULL,
+    valor DECIMAL(10,4) NOT NULL,  -- valor para ese criterio
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id),
+    FOREIGN KEY (criterio_id) REFERENCES criterios(id)
+);
+
+CREATE TABLE resultados (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ticket_id INT NOT NULL,
+    score_saw DECIMAL(10,4) NOT NULL,  -- resultado final
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ticket_id) REFERENCES tickets(id)
+);
+
+INSERT INTO criterios (nombre, peso) VALUES
+('Severidad', 0.4),
+('Impacto', 0.3),
+('Usuarios afectados', 0.3);
+
+INSERT INTO tickets (descripcion, severidad, impacto, usuarios) VALUES
+('Error en login', 4, 3, 120),
+('Falla en reportes PDF', 3, 4, 60),
+('Caída del servicio', 5, 5, 250),
+('Retraso en notificaciones', 2, 2, 20);
+
+///////////////////////////////////////////////////////////////////////////
