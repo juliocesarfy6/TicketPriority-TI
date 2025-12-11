@@ -1,1 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
+/* Asegura que el contenido no quede sobre el sidebar y que el sidebar reciba clicks */
+app-sidebar, .sidebar { position: fixed; left: 0; top: 0; z-index: 1000; }
+.main-content {
+  margin-left: 240px;
+  position: relative;
+  z-index: 1;
+  padding: 20px;
+}
+
+/* Móvil */
+@media (max-width: 768px) {
+  .main-content { margin-left: 0; padding-bottom: 80px; }
+  app-sidebar { position: static; z-index: 1000; }
+}

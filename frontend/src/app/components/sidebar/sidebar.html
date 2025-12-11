@@ -1,39 +1,52 @@
-<!-- DESKTOP SIDEBAR --> 
+<!-- DESKTOP SIDEBAR -->
 <div class="sidebar desktop-only">
   <h2 class="title">SAW System</h2>
 
   <nav>
     <ul>
-      <li routerLink="/tickets" routerLinkActive="active">
-        <span class="material-icons">assignment</span>
-        <span>Tickets</span>
+
+      <li routerLinkActive="active">
+        <a routerLink="/tickets">
+          <span class="material-icons">assignment</span>
+          <span>Tickets</span>
+        </a>
       </li>
 
-      <li routerLink="/criteria" routerLinkActive="active">
-        <span class="material-icons">rule</span>
-        <span>Criterios</span>
+      <li routerLinkActive="active">
+        <a routerLink="/criteria">
+          <span class="material-icons">rule</span>
+          <span>Criterios</span>
+        </a>
       </li>
 
-      <li routerLink="/evaluation" routerLinkActive="active">
-        <span class="material-icons">analytics</span>
-        <span>Evaluación</span>
+      <li routerLinkActive="active">
+        <a routerLink="/evaluation">
+          <span class="material-icons">analytics</span>
+          <span>Evaluación</span>
+        </a>
       </li>
 
-      <li routerLink="/result" routerLinkActive="active">
-        <span class="material-icons">check_circle</span>
-        <span>Resultados</span>
+      <li routerLinkActive="active">
+        <a routerLink="/result">
+          <span class="material-icons">check_circle</span>
+          <span>Resultados</span>
+        </a>
       </li>
 
-      <li routerLink="/ranking" routerLinkActive="active">
-        <span class="material-icons">format_list_numbered</span>
-        <span>Ranking SAW</span>
+      <li routerLinkActive="active">
+        <a routerLink="/ranking">
+          <span class="material-icons">format_list_numbered</span>
+          <span>Ranking SAW</span>
+        </a>
       </li>
+
     </ul>
   </nav>
 </div>
 
 <!-- MOBILE BOTTOM BAR -->
 <div class="mobile-navbar mobile-only">
+
   <button routerLink="/tickets" routerLinkActive="active">
     <span class="material-icons">assignment</span>
   </button>
@@ -53,4 +66,5 @@
   <button routerLink="/ranking" routerLinkActive="active">
     <span class="material-icons">format_list_numbered</span>
   </button>
+
 </div>

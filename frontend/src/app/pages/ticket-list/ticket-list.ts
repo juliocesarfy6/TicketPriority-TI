@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { TicketService} from '../../services/ticket';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-ticket-list',
@@ -10,11 +11,24 @@ import { CommonModule } from '@angular/common';
 export class TicketListComponent implements OnInit {
   tickets: any[] = [];
 
-  constructor(private ticketService: TicketService) {}
+  constructor(
+    private ticketService: TicketService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) {
+    this.router.events.subscribe(() => {
+      this.loadTickets();
+    });
+  }
 
   ngOnInit() {
+    this.loadTickets();
+  }
+
+  private loadTickets() {
     this.ticketService.getTickets().subscribe(res => {
       this.tickets = res;
+      this.cdr.detectChanges();
     });
   }
 }
