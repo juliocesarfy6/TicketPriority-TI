@@ -4,6 +4,7 @@ import { TicketFormComponent } from './pages/ticket-form/ticket-form';
 import { CriteriaListComponent } from './pages/criteria-list/criteria-list';
 import { CriteriaFormComponent } from './pages/criteria-form/criteria-form';
 import { EvaluationResultComponent } from './pages/evaluation-result/evaluation-result';
+import { RankingComponent } from './pages/ranking/ranking';
 
 export const routes: Routes = [
   { path: '', redirectTo: 'tickets', pathMatch: 'full' },
@@ -15,4 +16,6 @@ export const routes: Routes = [
   { path: 'criteria/new', component: CriteriaFormComponent },
 
   { path: 'evaluation', component: EvaluationResultComponent },
+
+  { path: 'ranking', component: RankingComponent },
 ];

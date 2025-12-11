@@ -20,6 +20,7 @@
 nav ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 nav li {
@@ -31,6 +32,7 @@ nav li {
   border-radius: 8px;
   margin-bottom: 6px;
   white-space: nowrap;
+  transition: background 0.2s ease;
 }
 
 nav li:hover {
@@ -53,7 +55,6 @@ nav li:hover {
   bottom: 0;
   left: 0;
 
-  display: flex;
   justify-content: space-around;
   align-items: center;
 }
@@ -62,7 +63,7 @@ nav li:hover {
   background: none;
   border: none;
   color: #fff;
-  font-size: 26px;
+  font-size: 28px;
 }
 
 .mobile-navbar .active {
@@ -70,15 +71,45 @@ nav li:hover {
 }
 
 /* ======= RESPONSIVE RULES ======= */
-.desktop-only { display: block; }
-.mobile-only { display: none; }
+.desktop-only {
+  display: block;
+}
+
+.mobile-only {
+  display: none;
+}
 
 @media (max-width: 768px) {
-  .desktop-only { display: none !important; }
-  .mobile-only { display: flex !important; }
-
-  /* Sidebar no ocupa espacio en móvil */
+  /* Ocultar sidebar en móvil */
   .sidebar {
     display: none !important;
   }
+
+  .desktop-only {
+    display: none !important;
+  }
+
+  /* Mostrar barra inferior */
+  .mobile-only,
+  .mobile-navbar {
+    display: flex !important;
+  }
+
+  /* Ajuste del contenido principal */
+  .content {
+    margin-left: 0 !important;
+    padding-bottom: 80px; /* espacio para la barra inferior */
+  }
+}
+
+.sidebar {
+  z-index: 1000;
+}
+
+.mobile-navbar {
+  z-index: 1000;
+}
+
+.main-content {
+  z-index: 1;
 }
