@@ -1,0 +1,24 @@
+{
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "mysql2": "^3.15.3",
+    "sequelize": "^6.37.7",
+    "sweetalert2": "^11.26.4"
+  },
+  "name": "ticketpriority-ti",
+  "version": "1.0.0",
+  "description": "Un departamento de TI necesita priorizar qué ticket debe atenderse primero.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

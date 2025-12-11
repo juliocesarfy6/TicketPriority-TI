@@ -15,8 +15,9 @@ app.use(express.json());
 
 app.use('/api/tickets', ticketsRouter);
 app.use('/api/criterios', criteriosRouter);
-app.use('/api/evaluateAll', evaluateRouter);
+app.use('/api/evaluate', evaluateRouter);   // ✅ ruta unificada
 app.use('/api/resultados', resultadosRouter);
+
 
 app.get('/', (req, res) => res.json({ ok: true }));
 

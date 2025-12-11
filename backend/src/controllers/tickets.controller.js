@@ -1,11 +1,17 @@
 const db = require('../db');
 
+function toNumberOrNull(value) {
+  if (value === null || value === undefined || value === '') return null;
+  const n = Number(value);
+  return isNaN(n) ? null : n;
+}
+
 exports.getAll = async (req, res) => {
   try {
     const [rows] = await db.query('SELECT * FROM tickets ORDER BY id DESC');
     res.json(rows);
   } catch (err) {
-    console.error(err);
+    console.error('getAll tickets error:', err);
     res.status(500).json({ error: 'DB error' });
   }
 };
@@ -15,7 +21,7 @@ exports.getById = async (req, res) => {
     const [rows] = await db.query('SELECT * FROM tickets WHERE id = ?', [req.params.id]);
     res.json(rows[0] || null);
   } catch (err) {
-    console.error(err);
+    console.error('getById ticket error:', err);
     res.status(500).json({ error: 'DB error' });
   }
 };
@@ -23,14 +29,32 @@ exports.getById = async (req, res) => {
 exports.create = async (req, res) => {
   try {
     const { descripcion, severidad, impacto, usuarios } = req.body;
+
+    const sev = toNumberOrNull(severidad);
+    const imp = toNumberOrNull(impacto);
+    const usu = toNumberOrNull(usuarios);
+
+    if (!descripcion || sev === null || imp === null || usu === null) {
+      return res.status(400).json({
+        error: 'Campos obligatorios: descripcion, severidad, impacto, usuarios (numéricos)'
+      });
+    }
+
     const [result] = await db.query(
       'INSERT INTO tickets (descripcion, severidad, impacto, usuarios) VALUES (?, ?, ?, ?)',
-      [descripcion, severidad, impacto, usuarios]
+      [descripcion, sev, imp, usu]
     );
-    const [rows] = await db.query('SELECT * FROM tickets WHERE id = ?', [result.insertId]);
-    res.status(201).json(rows[0]);
+
+    res.status(201).json({
+      id: result.insertId,
+      descripcion,
+      severidad: sev,
+      impacto: imp,
+      usuarios: usu,
+      prioridad_saw: 0
+    });
   } catch (err) {
-    console.error(err);
+    console.error('create ticket error:', err);
     res.status(500).json({ error: 'DB error' });
   }
 };
@@ -38,24 +62,50 @@ exports.create = async (req, res) => {
 exports.update = async (req, res) => {
   try {
     const { descripcion, severidad, impacto, usuarios } = req.body;
-    await db.query(
-      'UPDATE tickets SET descripcion=?, severidad=?, impacto=?, usuarios=? WHERE id=?',
-      [descripcion, severidad, impacto, usuarios, req.params.id]
+
+    const sev = toNumberOrNull(severidad);
+    const imp = toNumberOrNull(impacto);
+    const usu = toNumberOrNull(usuarios);
+
+    if (!descripcion || sev === null || imp === null || usu === null) {
+      return res.status(400).json({
+        error: 'Campos obligatorios: descripcion, severidad, impacto, usuarios (numéricos)'
+      });
+    }
+
+    const [result] = await db.query(
+      'UPDATE tickets SET descripcion = ?, severidad = ?, impacto = ?, usuarios = ? WHERE id = ?',
+      [descripcion, sev, imp, usu, req.params.id]
     );
-    const [rows] = await db.query('SELECT * FROM tickets WHERE id = ?', [req.params.id]);
-    res.json(rows[0]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Ticket no encontrado' });
+    }
+
+    res.json({
+      id: Number(req.params.id),
+      descripcion,
+      severidad: sev,
+      impacto: imp,
+      usuarios: usu
+    });
   } catch (err) {
-    console.error(err);
+    console.error('update ticket error:', err);
     res.status(500).json({ error: 'DB error' });
   }
 };
 
 exports.remove = async (req, res) => {
   try {
-    await db.query('DELETE FROM tickets WHERE id=?', [req.params.id]);
+    const [result] = await db.query('DELETE FROM tickets WHERE id=?', [req.params.id]);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Ticket no encontrado' });
+    }
+
     res.json({ ok: true });
   } catch (err) {
-    console.error(err);
+    console.error('remove ticket error:', err);
     res.status(500).json({ error: 'DB error' });
   }
 };
