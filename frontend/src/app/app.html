@@ -1,5 +1,7 @@
-<app-sidebar></app-sidebar>
+<app-sidebar class="desktop-only"></app-sidebar>
 
-<div style="margin-left: 260px; padding: 20px;">
+<div class="app-content">
   <router-outlet></router-outlet>
 </div>
+
+<app-sidebar class="mobile-only"></app-sidebar>

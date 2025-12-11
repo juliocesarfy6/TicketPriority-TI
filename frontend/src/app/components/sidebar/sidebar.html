@@ -1,12 +1,47 @@
-<div class="sidebar">
+<!-- DESKTOP SIDEBAR -->
+<div class="sidebar desktop-only">
   <h2 class="title">SAW System</h2>
 
   <nav>
     <ul>
-      <li routerLink="/tickets" routerLinkActive="active">Tickets</li>
-      <li routerLink="/criteria" routerLinkActive="active">Criterios</li>
-      <li routerLink="/evaluation" routerLinkActive="active">Evaluación SAW</li>
-      <li routerLink="/result" routerLinkActive="active">Resultados</li>
+      <li routerLink="/tickets" routerLinkActive="active">
+        <span class="material-icons">assignment</span>
+        <span>Tickets</span>
+      </li>
+
+      <li routerLink="/criteria" routerLinkActive="active">
+        <span class="material-icons">rule</span>
+        <span>Criterios</span>
+      </li>
+
+      <li routerLink="/evaluation" routerLinkActive="active">
+        <span class="material-icons">analytics</span>
+        <span>Evaluación</span>
+      </li>
+
+      <li routerLink="/result" routerLinkActive="active">
+        <span class="material-icons">check_circle</span>
+        <span>Resultados</span>
+      </li>
     </ul>
   </nav>
+</div>
+
+<!-- MOBILE BOTTOM BAR -->
+<div class="mobile-navbar mobile-only">
+  <button routerLink="/tickets" routerLinkActive="active">
+    <span class="material-icons">assignment</span>
+  </button>
+
+  <button routerLink="/criteria" routerLinkActive="active">
+    <span class="material-icons">rule</span>
+  </button>
+
+  <button routerLink="/evaluation" routerLinkActive="active">
+    <span class="material-icons">analytics</span>
+  </button>
+
+  <button routerLink="/result" routerLinkActive="active">
+    <span class="material-icons">check_circle</span>
+  </button>
 </div>

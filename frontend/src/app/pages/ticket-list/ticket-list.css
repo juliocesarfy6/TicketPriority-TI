@@ -1,0 +1,41 @@
+/* Wrapper evita que la tabla se corte */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 10px;
+}
+
+/* La tabla siempre se ajusta al ancho disponible */
+.tickets-table {
+  width: 100%;
+  min-width: 650px; /* evita que se rompa el contenido */
+  border-collapse: collapse;
+  background: #1a1a1a;
+  color: #fff;
+}
+
+.tickets-table th,
+.tickets-table td {
+  padding: 12px;
+  border: 1px solid #333;
+}
+
+.tickets-table thead {
+  background-color: #222;
+}
+
+.tickets-table tr:hover {
+  background-color: #333;
+}
+
+/* Mobile: mejora el scroll visual */
+@media (max-width: 768px) {
+  .table-wrapper {
+    border: 1px solid #333;
+    border-radius: 6px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}

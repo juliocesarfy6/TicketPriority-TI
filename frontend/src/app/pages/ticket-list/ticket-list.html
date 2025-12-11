@@ -1,22 +1,24 @@
 <h2>Tickets de Soporte</h2>
 
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Descripción</th>
-      <th>Severidad</th>
-      <th>Impacto</th>
-      <th>Usuarios afectados</th>
-      <th>Prioridad SAW</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let t of tickets">
-      <td>{{ t.descripcion }}</td>
-      <td>{{ t.severidad }}</td>
-      <td>{{ t.impacto }}</td>
-      <td>{{ t.usuarios }}</td>
-      <td>{{ t.prioridad }}</td>
-    </tr>
-  </tbody>
-</table>
+<div class="table-responsive">
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Descripción</th>
+        <th>Severidad</th>
+        <th>Impacto</th>
+        <th>Usuarios afectados</th>
+        <th>Prioridad SAW</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let t of tickets">
+        <td>{{ t.descripcion }}</td>
+        <td>{{ t.severidad }}</td>
+        <td>{{ t.impacto }}</td>
+        <td>{{ t.usuarios }}</td>
+        <td>{{ t.prioridad }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
