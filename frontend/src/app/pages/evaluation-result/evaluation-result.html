@@ -1,21 +1,91 @@
-<h2>Resultado de la Evaluación SAW</h2>
+<div class="container mt-4">
+  <div *ngIf="modoSeleccion">
+    <h2>Selección de Tickets para Evaluación</h2>
+    <p class="text-muted">Elige los tickets que quieres analizar con SAW.</p>
 
-<p class="text-muted">
-  Esta es una vista preliminar. Luego conectaremos el cálculo real del backend.
-</p>
+    <div class="d-flex justify-content-between mb-3 bg-light p-3 rounded">
+      <span class="align-self-center">
+        <strong>{{ selectedIds.size }}</strong> seleccionados
+      </span>
+      <button
+        class="btn btn-primary"
+        (click)="calcular()"
+        [disabled]="isLoading || selectedIds.size === 0"
+      >
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+        {{ isLoading ? 'Calculando...' : 'Calcular Prioridades' }}
+      </button>
+    </div>
 
-<table class="table table-bordered">
-  <thead>
-    <tr>
-      <th>Ticket</th>
-      <th>Puntaje SAW</th>
-    </tr>
-  </thead>
+    <table class="table table-hover table-bordered" *ngIf="tickets.length > 0">
+      <thead class="table-dark">
+        <tr>
+          <th class="text-center" style="width: 50px">
+            <input type="checkbox" (change)="toggleAll($event)" />
+          </th>
+          <th>ID</th>
+          <th>Descripción</th>
+          <th>Severidad</th>
+          <th>Impacto</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let t of tickets" [class.table-active]="selectedIds.has(t.id)">
+          <td class="text-center">
+            <input
+              type="checkbox"
+              [checked]="selectedIds.has(t.id)"
+              (change)="toggleSelection(t.id)"
+            />
+          </td>
+          <td>{{ t.id }}</td>
+          <td>{{ t.descripcion }}</td>
+          <td>{{ t.severidad }}</td>
+          <td>{{ t.impacto }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 
-  <tbody>
-    <tr *ngFor="let r of resultados">
-      <td>{{ r.ticket }}</td>
-      <td>{{ r.puntaje }}</td>
-    </tr>
-  </tbody>
-</table>
+  <div *ngIf="!modoSeleccion">
+    <h2>Ranking de Prioridades SAW</h2>
+
+    <button class="btn btn-secondary mb-3" (click)="volverASeleccionar()">
+      ← Volver a Seleccionar
+    </button>
+
+    <table class="table table-bordered shadow-sm">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Ticket</th>
+          <th>Categoría SAW</th>
+          <th>Puntaje (0-1)</th>
+          <th>Severidad Original</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of resultados; let i = index" [ngClass]="r.clase_css">
+          <td class="fw-bold text-center h5">{{ i + 1 }}</td>
+
+          <td>
+            <span class="fw-bold">{{ r.ticket?.descripcion || 'Ticket' }}</span>
+            <br /><small class="text-muted">ID: {{ r.ticket?.id }}</small>
+          </td>
+
+          <td class="fw-bold">
+            {{ r.categoria_nombre }}
+          </td>
+
+          <td class="fw-bold">{{ r.puntaje | number : '1.3-3' }}</td>
+          <td>{{ r.ticket?.severidad }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- <div class="mt-3 small text-muted">
+      <span> > 0.8 (Urgente)</span> | <span> > 0.5 (Alta)</span> | <span> > 0.3 (Media)</span> |
+      <span> < 0.3 (Baja)</span>
+    </div> -->
+  </div>
+</div>

@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require("../db");
 
 // Convierte a número seguro
 function toNumber(value) {
@@ -9,12 +9,12 @@ function toNumber(value) {
 
 // Dado un ticket y un criterio, decide qué valor usar
 function getValueForCriterion(ticket, criterio) {
-  const name = (criterio.nombre || '').toLowerCase().trim();
+  const name = (criterio.nombre || "").toLowerCase().trim();
 
   // Heurística según nombre del criterio
-  if (name.includes('severidad')) return toNumber(ticket.severidad);
-  if (name.includes('impacto')) return toNumber(ticket.impacto);
-  if (name.includes('usuario')) return toNumber(ticket.usuarios);
+  if (name.includes("severidad")) return toNumber(ticket.severidad);
+  if (name.includes("impacto")) return toNumber(ticket.impacto);
+  if (name.includes("usuario")) return toNumber(ticket.usuarios);
 
   // Fallback: intentar usar el nombre tal cual como columna
   const directKey = criterio.nombre;
@@ -36,21 +36,33 @@ function getValueForCriterion(ticket, criterio) {
  */
 exports.getMatrixPreview = async (req, res) => {
   try {
-    const [criterios] = await db.query('SELECT * FROM criterios ORDER BY id');
-    const [tickets] = await db.query('SELECT * FROM tickets ORDER BY id');
+    const [criterios] = await db.query("SELECT * FROM criterios ORDER BY id");
+    const [tickets] = await db.query("SELECT * FROM tickets ORDER BY id");
 
-    const matrix = tickets.map(t => ({
+    const matrix = tickets.map((t) => ({
       ticket: t,
-      values: criterios.map(c => getValueForCriterion(t, c))
+      values: criterios.map((c) => getValueForCriterion(t, c)),
     }));
 
     res.json({ criterios, tickets, matrix });
   } catch (err) {
-    console.error('getMatrixPreview error:', err);
-    res.status(500).json({ error: 'DB error en getMatrixPreview' });
+    console.error("getMatrixPreview error:", err);
+    res.status(500).json({ error: "DB error en getMatrixPreview" });
   }
 };
 
+function obtenerCategoria(score) {
+  if (score >= 0.8) {
+    // Top 20% del rango posible
+    return { etiqueta: "URGENTE ", clase: "table-danger" };
+  } else if (score >= 0.5) {
+    return { etiqueta: "PRIORIDAD ALTA ", clase: "table-warning" };
+  } else if (score >= 0.3) {
+    return { etiqueta: "MEDIA ", clase: "table-info" };
+  } else {
+    return { etiqueta: "BAJA ", clase: "" };
+  }
+}
 /**
  * POST /api/evaluate  (o /api/evaluateAll según lo montes en index.js)
  * - Lee criterios y tickets
@@ -61,34 +73,48 @@ exports.getMatrixPreview = async (req, res) => {
  * - Devuelve ranking
  */
 exports.evaluateAll = async (req, res) => {
-  const connection = db; // por si luego quieres transacciones
+  const connection = db;
 
   try {
-    const [criterios] = await connection.query('SELECT * FROM criterios ORDER BY id');
-    const [tickets] = await connection.query('SELECT * FROM tickets ORDER BY id');
+    //  Obtener Criterios
+    const [criterios] = await connection.query(
+      "SELECT * FROM criterios ORDER BY id"
+    );
+
+    // Obtener TODOS los tickets
+    let [tickets] = await connection.query("SELECT * FROM tickets ORDER BY id");
 
     if (!criterios.length) {
-      return res.status(400).json({ error: 'No hay criterios registrados' });
+      return res.status(400).json({ error: "No hay criterios registrados" });
+    }
+
+    const { ticketIds } = req.body;
+
+    // Si el usuario envió una lista de IDs, filtramos los tickets
+    if (ticketIds && Array.isArray(ticketIds) && ticketIds.length > 0) {
+      const idsPermitidos = ticketIds.map((id) => Number(id));
+
+      tickets = tickets.filter((t) => idsPermitidos.includes(t.id));
     }
 
     if (!tickets.length) {
-      return res.status(400).json({ error: 'No hay tickets para evaluar' });
+      return res.status(400).json({
+        error: "No hay tickets para evaluar (seleccione al menos uno)",
+      });
     }
 
-    // 1) Normalizar pesos (que sumen 1)
-    const pesosOriginales = criterios.map(c => toNumber(c.peso));
+    const pesosOriginales = criterios.map((c) => toNumber(c.peso));
     const sumaPesos = pesosOriginales.reduce((acc, p) => acc + p, 0);
-    const pesos = sumaPesos > 0
-      ? pesosOriginales.map(p => p / sumaPesos)
-      : criterios.map(() => 1 / criterios.length); // fallback: todos iguales
+    const pesos =
+      sumaPesos > 0
+        ? pesosOriginales.map((p) => p / sumaPesos)
+        : criterios.map(() => 1 / criterios.length);
 
-    // 2) Construir matriz de valores [ticket][criterio]
-    const valuesMatrix = tickets.map(t =>
-      criterios.map(c => getValueForCriterion(t, c))
+    //  Construir matriz de valores
+    const valuesMatrix = tickets.map((t) =>
+      criterios.map((c) => getValueForCriterion(t, c))
     );
 
-    // 3) Normalizar por columna (criterio) usando SAW
-    //    n_ij = v_ij / max_j  (beneficio puro)
     const numTickets = tickets.length;
     const numCriterios = criterios.length;
 
@@ -110,46 +136,54 @@ exports.evaluateAll = async (req, res) => {
       })
     );
 
-    // 4) Calcular score SAW por ticket
-    const weightedScores = normalizedMatrix.map(row => {
+    // Calcular score SAW final
+    const weightedScores = normalizedMatrix.map((row) => {
       return row.reduce((acc, n_ij, j) => acc + n_ij * pesos[j], 0);
     });
 
-    // 5) Limpiar resultados anteriores (opcional)
-    await connection.query('DELETE FROM resultados');
+    // Limpiar resultados anteriores
+    await connection.query("DELETE FROM resultados");
 
-    // 6) Guardar resultados e ir actualizando prioridad_saw en tickets
+    // Guardar nuevos resultados
     for (let i = 0; i < tickets.length; i++) {
       const ticketId = tickets[i].id;
       const score = weightedScores[i];
 
       await connection.query(
-        'INSERT INTO resultados (ticket_id, score_saw) VALUES (?, ?)',
+        "INSERT INTO resultados (ticket_id, score_saw) VALUES (?, ?)",
         [ticketId, score]
       );
 
-      // Asegúrate de tener la columna prioridad_saw en la tabla tickets
+      // Actualizamos el ticket con su nuevo score
       await connection.query(
-        'UPDATE tickets SET prioridad_saw = ? WHERE id = ?',
+        "UPDATE tickets SET prioridad_saw = ? WHERE id = ?",
         [score, ticketId]
       );
     }
 
-    // 7) Construir ranking (ticket + score) ordenado desc
+    // Armar respuesta para el Frontend
     const ranking = tickets
-      .map((t, idx) => ({
-        ticket: { ...t, prioridad_saw: weightedScores[idx] },
-        score: weightedScores[idx]
-      }))
-      .sort((a, b) => b.score - a.score);
+      .map((t, idx) => {
+        const puntajeFinal = weightedScores[idx];
+        const infoCategoria = obtenerCategoria(puntajeFinal); // <--- Calculamos categoría
+
+        return {
+          ticket: { ...t, prioridad_saw: puntajeFinal },
+          puntaje: puntajeFinal,
+          // Agregamos estos datos extra para el HTML:
+          categoria_nombre: infoCategoria.etiqueta,
+          clase_css: infoCategoria.clase,
+        };
+      })
+      .sort((a, b) => b.puntaje - a.puntaje);
 
     res.json({
       ok: true,
       criterios,
-      ranking
+      ranking,
     });
   } catch (err) {
-    console.error('evaluateAll error:', err);
-    res.status(500).json({ error: 'DB error en evaluateAll' });
+    console.error("evaluateAll error:", err);
+    res.status(500).json({ error: "DB error en evaluateAll" });
   }
 };

@@ -15,7 +15,7 @@ export const routes: Routes = [
   { path: 'criteria', component: CriteriaListComponent },
   { path: 'criteria/new', component: CriteriaFormComponent },
 
-  { path: 'evaluation', component: EvaluationResultComponent },
-
+  { path: 'evaluation', component: RankingComponent },
+  { path: 'result', component: EvaluationResultComponent },
   { path: 'ranking', component: RankingComponent },
 ];
